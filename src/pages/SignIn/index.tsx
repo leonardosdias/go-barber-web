@@ -2,7 +2,12 @@ import React, { useCallback, useRef } from 'react';
 import { FiLogIn, FiMail, FiLock } from 'react-icons/fi';
 import { Form } from '@unform/web';
 import { FormHandles } from '@unform/core';
+
 import getValidationErrors from '../../utils/getValidationErrors';
+
+import { useAuth } from '../../hooks/auth';
+import { useToast } from '../../hooks/toast';
+
 import * as Yup from 'yup';
 
 import logoImg from '../../assets/logo.svg';
@@ -12,12 +17,18 @@ import Button from '../../components/Button';
 
 import { Container, Content, Background } from './styles';
 
+interface SigInFormData {
+  email: string;
+  password: string;
+}
+
 const SignIn: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
 
-  console.log(formRef);
+  const { signIn } = useAuth();
+  const { addToast } = useToast();
 
-  const handleSubmit = useCallback(async (data: object) => {
+  const handleSubmit = useCallback(async (data: SigInFormData) => {
     try {
       formRef.current?.setErrors({});
 
@@ -31,14 +42,24 @@ const SignIn: React.FC = () => {
       await schema.validate(data, {
         abortEarly: false,
       });
+      await signIn({
+        email: data.email,
+        password: data.password,
+      });
     } catch (err) {
-      console.log(err);
+      if (err instanceof Yup.ValidationError) {
+        const errors = getValidationErrors(err);
 
-      const errors = getValidationErrors(err);
+        formRef.current?.setErrors(errors);
 
-      formRef.current?.setErrors(errors);
+      }
+      addToast({
+        type: 'error',
+        title: 'Erro na autenticação.',
+        description: 'Ocorreu um erro nas credenciais.'
+      });
     }
-  }, []);
+  }, [signIn, addToast]);
 
 
   return (
