@@ -28,7 +28,7 @@ display:flex;
 flex-direction:column;
 justify-content:center;
 align-items:center;
-margin: -76px auto 0;
+margin: -176px auto 0;
 
 width:100%;
 
@@ -70,7 +70,7 @@ img{
   border-radius:50%;
 }
 
-button{
+label{
   position:absolute;
   width:48px;
   height:48px;
@@ -79,11 +79,16 @@ button{
   right:0;
   bottom:0;
   border:0;
+  cursor:pointer;
   transition:background-color 0.2s;
 
   display:flex;
   align-items:center;
   justify-content:center;
+
+  input{
+    display:none;
+  }
 
   svg{
     width:20px;
